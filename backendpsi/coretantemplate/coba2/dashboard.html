@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Medis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' };
+  </script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="bg-[#f7f2d3] dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col min-h-screen">
+
+  <!-- Navbar -->
+  <header class="flex justify-between items-center bg-[#e2eac2] dark:bg-gray-800 px-6 py-3 shadow text-sm">
+    <div class="font-semibold text-green-800 dark:text-green-300">🩺 Vendor Delta - Medical Record System</div>
+    <div class="relative">
+      <button id="navigationDropdownButton" class="px-4 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-600">
+        <i class="fas fa-bars"></i>
+      </button>
+      <div id="navigationDropdown" class="absolute right-0 mt-2 bg-white dark:bg-gray-700 border shadow rounded hidden z-10">
+        <a href="profil.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm">Profil</a>
+        <a href="login.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm">Keluar</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow p-4 md:p-6">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 grid grid-cols-1 md:grid-cols-5 gap-4">
+      
+      <!-- Sidebar -->
+      <aside class="col-span-1 bg-[#f9f3d0] dark:bg-gray-700 p-4 rounded-lg">
+        {% for patient in patient %}
+        <div class="text-center mb-4">
+          <div class="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-600 mx-auto mb-2"></div>
+          <div class="font-bold">{{ patient.nama_pasien }}</div>
+          <div class="text-xs text-gray-500">{{ patient.patient_id }}</div>
+        </div>
+        <div class="space-y-2 text-sm">
+          <p><strong>Jenis Kelamin:</strong> {{ patient.get_sex_display  }}</p>
+          <p><strong>Alamat:</strong> {{ patient.alamat }}</p>
+          <p><strong>Tanggal Lahir:</strong> {{ patient.date_of_birth }}</p>
+          <p><strong>No. HP:</strong> {{ patient.phone_number }}</p>
+        </div>
+        {% endfor %}
+        <div class="mt-4">
+          <h3 class="font-semibold mb-2">Riwayat Pemeriksaan</h3>
+          {% for mcu_records in mcu_records %}
+          <ul class="text-sm space-y-1">
+            <li>Pemeriksaan pada {{mcu_records.timestamp}} <a href="#" class="text-blue-500 hover:underline">Aksi</a></li>
+          </ul>
+          {% endfor %}
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <button onclick="location.href='edit-pasien.html'" class="bg-blue-500 text-white px-3 py-1 text-xs rounded hover:bg-blue-600">Edit Pasien</button>
+          <!-- <button onclick="confirm('Hapus data pasien ini?')" class="bg-red-500 text-white px-3 py-1 text-xs rounded hover:bg-red-600">Hapus</button> -->
+          <button onclick="downloadPDF()" class="bg-gray-300 dark:bg-gray-600 text-xs px-3 py-1 rounded">Unduh Data</button>
+        </div>
+      </aside>
+
+      <!-- Data Medis Panel -->
+      <section class="col-span-1 md:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {% if latest_mcu_record %}
+        <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">
+          <div class="font-semibold">Berat Badan</div>
+          <div class="text-2xl font-bold mt-2">{{ latest_mcu_record.weight }} Kg</div>
+        </div>
+        <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">
+          <div class="font-semibold">Tinggi Badan</div>
+          <div class="text-2xl font-bold mt-2">{{ latest_mcu_record.height }} cm</div>
+        </div>
+        <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">
+          <div class="font-semibold">Hidrasi</div>
+          <div class="text-2xl font-bold mt-2">{{ latest_mcu_record.get_urine_color_display }}</div>
+        </div>
+        <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">
+          <div class="text-sm">Suhu</div>
+          <div class="text-2xl font-bold">{{ latest_mcu_record.body_temperature }}°C</div>
+        </div>
+        <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">
+          <div class="text-sm">Kadar Alkohol</div>
+          <div class="text-2xl font-bold">{{ latest_mcu_record.alcohol_level }} kg/l</div>
+        </div>
+        <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">
+          <div class="text-sm">BMI</div>
+          <div class="text-2xl font-bold">{{ latest_mcu_record.bmi }}</div>
+        </div>
+        {% endif %}
+      </section>
+
+    </div>
+  </main>
+
+  <!-- Scripts -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const theme = localStorage.getItem("theme");
+      const html = document.documentElement;
+      theme === "dark" ? html.classList.add("dark") : html.classList.remove("dark");
+    });
+
+    // Dropdown Toggle
+    const dropdownButton = document.getElementById("navigationDropdownButton");
+    const dropdownMenu = document.getElementById("navigationDropdown");
+
+    dropdownButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+      dropdownMenu.classList.toggle("hidden");
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!dropdownMenu.contains(event.target) && !dropdownButton.contains(event.target)) {
+        dropdownMenu.classList.add("hidden");
+      }
+    });
+
+    // Unduh PDF
+    function downloadPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFontSize(14);
+      doc.text("🩺 Vendor Delta - Data Pasien", 14, 15);
+      doc.setFontSize(10);
+
+      let y = 30;
+      const data = [
+        ["Nama", "Aisyah Istri Rasulullah"],
+        ["ID", "D001-02"],
+        ["Jenis Kelamin", "Laki-laki"],
+        ["Alamat", "Jl. Haji Toyib, Asrama"],
+        ["Tanggal Lahir", "04/06/2005"],
+        ["No. HP", "08123456789"],
+        ["Riwayat Pemeriksaan", "#4 - 1 Mar 2025, #3 - 22 Feb 2025, #2 - 12 Feb 2025"],
+        ["Berat Badan", "-"],
+        ["Tinggi Badan", "-"],
+        ["Hidrasi", "Dehidrasi"],
+        ["Suhu", "30°C"],
+        ["Kadar Alkohol", "30%"],
+        ["BMI", "30"]
+      ];
+
+      data.forEach(([label, value]) => {
+        doc.text(`${label}: ${value}`, 14, y);
+        y += 7;
+      });
+
+      doc.save("data_pasien_aisyah.pdf");
+    }
+  </script>
+</body>
+</html>

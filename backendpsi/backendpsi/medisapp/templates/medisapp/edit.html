@@ -1,0 +1,68 @@
+<!-- File: tambah.html -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Edit Pasien</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-indigo-200 via-blue-100 to-cyan-100 min-h-screen flex items-center justify-center">
+
+  <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-center text-xl font-bold mb-6">Edit Pasien</h1>
+    
+    <form class="space-y-4" method="POST">
+      {% csrf_token %}
+      
+      <div>
+        <label class="block text-sm font-medium mb-1">Nama Lengkap</label>
+        {{ form.nama_pasien }}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Jenis Kelamin</label>
+        <div class="flex items-center space-x-4">
+          {% for radio in form.sex %}
+          <label class="inline-flex items-center mr-4">
+            {{ radio.tag }} {{ radio.choice_label }}
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Tanggal Lahir</label>
+        {{ form.date_of_birth }}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Alamat</label>
+        {{ form.alamat }}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">Nomor Telepon</label>
+        {{ form.phone_number}}
+      </div>
+
+      <div>
+        <label class="block text-sm font-medium mb-1">ID Pasien</label>
+        <input type="text" placeholder="ID Pasien" name="patient_id" id="patient_id" class="w-full px-3 py-2 border rounded" required>
+      </div>
+
+      <div class="flex justify-end pt-4">
+        <button type="submit" onclick="simpanPasienBaru()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Simpan</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    function simpanPasienBaru() {
+      alert("Data pasien baru disimpan!");
+      window.location.href = "medisapp/pasien.html";
+    }
+  </script>
+
+</body>
+</html>

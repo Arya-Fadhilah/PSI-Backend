@@ -1,0 +1,406 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard Medis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+    };
+  </script>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom right, #ffdddd68, #fecec75a);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .navbar {
+      width: 100%;
+      height: 100%;
+      padding: 1.2rem 2rem;
+      color: rgba(255, 255, 255, 0.703);
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      font-size: 1.2rem;
+      font-weight: 500;
+      background: linear-gradient(to right, #c2932c, #dbc06e);
+    }
+
+    .logo strong {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      font-weight: 400;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .container {
+      display: flex;
+      gap: 1.5rem;
+      padding: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .left-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 450px;
+      flex: 0 0 400px;
+    }
+
+    .patient-info h2 {
+      font-size: 1.6rem;
+    }
+
+    .patient-info p {
+      margin-bottom: 1rem;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn-red, .btn-blue, .btn-green {
+      padding: 0.4rem 0.8rem;
+      border: none;
+      border-radius: 0.5rem;
+      color: white;
+      cursor: pointer;
+      font-size: 0.85rem;
+      width: 127px;
+    }
+
+    .btn-red { background-color: #f26464; }
+    .btn-blue { background-color: #ffb16c; }
+    .btn-green { background-color: #b92525; }
+
+    .identity {
+      background: rgba(255, 255, 255, 0.999);
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem 2rem;
+      font-size: 0.75rem;
+      width: 400px;
+    }
+
+    .history {
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      width: 400px;
+    }
+
+    .history h3 {
+      margin-bottom: 0.8rem;
+    }
+
+    .history h2 {
+      margin-bottom: 1rem;
+    }
+
+    .history ul {
+      list-style: none;
+      font-size: 0.9rem;
+    }
+
+    .history li {
+      margin-bottom: 0.7rem;
+    }
+
+    .history span {
+      display: block;
+      font-size: 0.8rem;
+      color: #777;
+    }
+
+    .history a {
+      font-size: 0.85rem;
+      color: #ff4c8e;
+      text-decoration: none;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #eee;
+      gap: 1rem;
+    }
+
+    .history-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .history-info strong {
+      font-size: 1rem;
+    }
+
+    .history-info p {
+      margin: 0.2rem 0;
+      color: #666;
+      font-size: 0.9rem;
+    }
+
+    .history-action {
+      color: #e7ff4c;
+      text-decoration: none;
+      font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .right-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+    }
+
+    .data-cards {
+      display: flex;
+      gap: 0.8rem;
+      flex-wrap: wrap;
+      width: 100%;
+    }
+
+    .left-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 257px;
+    }
+
+    .right-metrics {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 516px;
+    }
+
+    .left-metrics .row,
+    .right-metrics .row {
+      display: flex;
+      gap: 0.8rem;
+    }
+
+    .card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05);
+      flex: 1;
+      text-align: center;
+    }
+
+    .full-width {
+      width: 100%;
+    }
+
+    .hydration.full-width {
+      text-align: left;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      justify-content: center;
+    }
+
+    .card {
+      background: white;
+      padding: 1rem;
+      border-radius: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .weight,
+    .height {
+      grid-column: span 1;
+    }
+
+    .hydration {
+      grid-column: span 2;
+    }
+
+    .bmi,
+    .temperature,
+    .alcohol {
+      grid-column: span 1;
+    }
+
+    .card.weight { grid-area: weight; }
+    .card.height { grid-area: height; }
+    .card.bmi { grid-area: bmi; }
+    .card.hydration { grid-area: hydration; }
+    .card.temperature { grid-area: temperature; }
+    .card.alcohol { grid-area: alcohol; }
+
+    .card {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      text-align: left;
+    }
+
+    .card h2 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0.4rem 0;
+    }
+
+    .card span {
+      font-size: 0.85rem;
+    }
+
+    .hydration p {
+      font-size: 0.85rem;
+      color: #222;
+    }
+
+    .chart {
+      background: white;
+      border-radius: 1rem;
+      padding: 1rem;
+      width: 788px;
+    }
+
+    .chart canvas {
+      width: 100%;
+      height: 150px;
+    }
+
+    .chart img {
+      width: 750px;
+      margin-top: 1rem;
+      border-radius: 0.5rem;
+    }
+
+    .purple { color: #e4f263; }
+    .teal { color: #2cc2a0; }
+    .red { color: #f26464; }
+    .blue { color: #3b9cff; }
+  </style>
+</head>
+<body class="bg-[#f7f2d3] dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col min-h-screen transition-colors duration-300">
+
+  <!-- Navbar -->
+  <header class="flex justify-between items-center bg-[#e2eac2] dark:bg-gray-800 px-6 py-3 shadow text-sm">
+    <div class="font-semibold text-green-800 dark:text-green-300">
+      🩺 Vendor Delta - Medical Record System
+    </div>
+    <div class="flex items-center gap-4">
+      <div id="darkModeToggle" class="w-10 h-5 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center px-1 cursor-pointer transition">
+        <div id="toggleDot" class="w-4 h-4 bg-white rounded-full shadow transition-transform"></div>
+      </div>
+      
+      <!-- Dropdown Navigation -->
+      <div class="relative">
+        <button id="navigationDropdownButton" class="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div id="navigationDropdown" class="absolute right-0 mt-2 bg-white dark:bg-gray-700 border shadow rounded hidden z-10">
+          <a href="profil.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm">Profil</a>
+          <a href="login.html" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm">Keluar</a>
+        </div>
+      </div>
+  
+      <script>
+        // JavaScript for toggling dropdown and dark mode
+        const dropdownButton = document.getElementById("navigationDropdownButton");
+        const dropdownMenu = document.getElementById("navigationDropdown");
+    
+        dropdownButton.addEventListener("click", function(event) {
+          event.stopPropagation();
+          dropdownMenu.classList.toggle("hidden");
+        });
+    
+        document.addEventListener("click", function(event) {
+          if (!dropdownMenu.contains(event.target) && !dropdownButton.contains(event.target)) {
+            dropdownMenu.classList.add("hidden");
+          }
+        });
+  
+        // Toggle dark mode
+        const darkToggle = document.getElementById("darkModeToggle");
+        const htmlEl = document.documentElement;
+        const toggleDot = document.getElementById("toggleDot");
+  
+        darkToggle.addEventListener("click", () => {
+          htmlEl.classList.toggle("dark");
+          toggleDot.classList.toggle("translate-x-5");
+        });
+      </script>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow p-4 md:p-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-4 grid grid-cols-1 md:grid-cols-5 gap-4">
+  
+        <!-- Sidebar Pasien -->
+        <aside class="col-span-1 bg-[#f9f3d0] dark:bg-gray-700 p-4 rounded-lg">
+          <div class="text-center mb-4">
+            <div class="w-16 h-16 rounded-full bg-gray-300 dark:bg-gray-600 mx-auto mb-2"></div>
+            <div class="font-bold">Aisyah Istri Rasulullah</div>
+            <div class="text-xs text-gray-500">ID: D001-02</div>
+          </div>
+          <div class="space-y-2 text-sm">
+            <p><strong>Jenis Kelamin:</strong> Laki-laki</p>
+            <p><strong>Alamat:</strong> Jl. Haji Toyib, Asrama</p>
+            <p><strong>Tanggal Lahir:</strong> 04/06/2005</p>
+            <p><strong>No. HP:</strong> 08123456789</p>
+          </div>
+          <div class="mt-4">
+            <h3 class="font-semibold mb-2">Riwayat Pemeriksaan</h3>
+            <ul class="text-sm space-y-1">
+              <li>Pemeriksaan #4 - 1 Mar 2025 <a href="#" class="text-blue-500 hover:underline">Aksi</a></li>
+              <li>Pemeriksaan #3 - 22 Feb 2025 <a href="#" class="text-blue-500 hover:underline">Aksi</a></li>
+              <li>Pemeriksaan #2 - 12 Feb 2025 <a href="#" class="text-blue-500 hover:underline">Aksi</a></li>
+            </ul>
+          </div>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <button onclick="downloadPDF()" class="bg-gray-300 dark:bg-gray-600 text-xs px-3 py-1 rounded">Unduh Data</button>
+          </div>
+        </aside>
+  
+        <!-- Panel Data Medis -->
+        <section class="col-span-1 md:col-span-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">Berat Badan</div>
+          <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center font-semibold">Tinggi Badan</div>
+          <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center">
+            <div class="font-semibold">Hidrasi</div>
+            <div class="text-2xl font-bold mt-2">Dehidrasi</div>
+          </div>
+          <div class="bg-orange-300 dark:bg-orange-500 rounded-lg p-4 text-center">
+            <div class="text-sm

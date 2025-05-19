@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width initial-scale=1.0"/>
+  <title>Patients List - Gamma Instruments</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static 'medisapp/pasien.css' %}" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <strong>Delta</strong> Instruments
+    </div>
+    <span class="subtitle">Medical Record System</span>
+    <form method="post" action="logout/">
+      {% csrf_token %}
+      <button class="btn_logout" type="submit">Log Out</button>
+    </form>
+  </header>
+
+  <main class="content">
+    <div class="content-header">
+      <h1>Patients List</h1>
+      <div class="search-actions">
+        <form method="GET" action="">
+          <input type="text" name="searchbar" placeholder="🔍 Enter Name">
+          <button class="btn-add">clear</button>
+        </form>
+        <form action="tambah_pasien/" method="get">
+          <button class="btn-add">+ New Patient</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th class="col-name">Name</th>
+            <th class="col-id">ID</th>
+            <th class="col-birthday">Birthday</th>
+            <th class="col-action">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Sample Rows -->
+          {% for patient in mypasien %}
+          <tr>
+            <td>{{ patient.nama_pasien }}</td>
+            <td>{{ patient.patient_id }}</td>
+            <td>{{ patient.date_of_birth }}</td>
+            <td>{{ patient.get_sex_display }}</td>
+            <td class="actions">
+
+              <form action="dataMCU/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+                <button type="submit">View</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+          <!-- Tambahkan baris lain sesuai kebutuhan -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button disabled>&lt;</button>
+      <button class="active">1</button>
+      <button>2</button>
+      <button>3</button>
+      <button>4</button>
+      <button>&gt;</button>
+
+      <select>
+        <option>10</option>
+        <option>20</option>
+        <option>30</option>
+      </select>
+      <span>/Page</span>
+    </div>
+  </main>
+</body>
+</html>

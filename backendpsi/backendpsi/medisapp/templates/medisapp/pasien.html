@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daftar Pasien - Medical Record</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gradient-to-r from-indigo-500 via-purple-500 to-blue-500 min-h-screen p-6">
+  <div class="bg-white rounded-xl shadow-xl p-6">
+    <div class="flex justify-between items-center mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-800">Daftar Pasien</h1>
+        <p class="text-sm text-gray-500">Medical Record System</p>
+      </div>
+      <div class="flex gap-2">
+        <input type="text" placeholder="Cari nama pasien..." class="px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400" />
+        <form action="tambah_pasien/" method="get">
+          <button class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600">+ Pasien Baru</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Tabel -->
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-sm text-left text-gray-700">
+        <thead class="bg-gray-200 text-gray-700">
+          <tr>
+            <th class="py-3 px-4">Nama Lengkap</th>
+            <th class="py-3 px-4">Kode ID</th>
+            <th class="py-3 px-4">Tanggal Lahir</th>
+            <th class="py-3 px-4">Jenis Kelamin</th>
+            <th class="py-3 px-4">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <!-- Contoh baris pasien -->
+          {% for patient in mypasien %}
+          <tr class="hover:bg-blue-50">
+            <td class="py-3 px-4">{{ patient.nama_pasien }}</td>
+            <td class="py-3 px-4">{{ patient.patient_id }}</td>
+            <td class="py-3 px-4">{{ patient.date_of_birth }}</td>
+            <td class="py-3 px-4">{{ patient.get_sex_display }}</td>
+            <td class="py-3 px-4 space-x-2">
+              <form action="edit/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+                <button type="submit" class="text-green-600 hover:underline">📝</button>
+              </form>
+              
+              <form action="delete/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+                <button type="submit" class="text-red-500 hover:underline">🗑️</button>
+              </form>
+
+              <form action="dataMCU/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+                <button type="submit" class="text-red-400 hover:underline">📄</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+          <!-- Tambahkan data pasien lain di sini -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="flex justify-between items-center mt-6 text-sm text-gray-500">
+      <div>Menampilkan 1-10 dari 50 data</div>
+      <div class="flex items-center gap-1">
+        <button class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">«</button>
+        <button class="px-2 py-1 bg-blue-500 text-white rounded">1</button>
+        <button class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">2</button>
+        <button class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">3</button>
+        <button class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200">»</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function goToDashboard() {
+      window.location.href = "dashboard.html";
+    }
+  </script>
+</body>
+</html>
